@@ -23,7 +23,7 @@ namespace TTBlockersFriend
             targetTime = DateTime.MinValue;
             PanelButton.Text = Name;
             TimerBar.MaxValue = 1f;
-            TimerBar.Value = 1f;
+            TimerBar.Value = 0f;
         }
 
         public void Activate(GatheringSpot gatheringSpot, int time)
@@ -52,16 +52,21 @@ namespace TTBlockersFriend
             if (targetTime >= secondsNow)
             {
                 PanelButton.Text = $"{Name} ({(int)(targetTime - secondsNow).TotalSeconds}s)";
-                TimerBar.Value = (float)(targetTime - now).TotalMilliseconds / 1000;
+                TimerBar.BarText = PanelButton.Text;
+                TimerBar.Value = TimerBar.MaxValue - ((float)((targetTime - now).TotalMilliseconds / 1000));
                 if ((targetTime - secondsNow).TotalSeconds == 0)
                 {
                     Active = false;
                     ScreenNotification.ShowNotification(Name + " ready!", ScreenNotification.NotificationType.Info);
                     PanelButton.Text = Name + " (ready)";
+                    TimerBar.BarText = Name + " (ready)";
                 }
             }
             else
+            {
                 PanelButton.Text = Name + " (ready)";
+                TimerBar.BarText = Name + " (ready)";
+            }
         }
     }
 }

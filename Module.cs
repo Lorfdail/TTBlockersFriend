@@ -1,10 +1,16 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
+using Blish_HUD.Graphics.UI;
 using Blish_HUD.Modules;
 using Blish_HUD.Modules.Managers;
+using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
+using System.Threading.Tasks;
+using TTBlockersFriend.Settings;
 
 namespace TTBlockersFriend
 {
@@ -26,6 +32,9 @@ namespace TTBlockersFriend
 
         // Data
         private GatheringSpot gatheringSpot;
+        private IEnumerable<Gw2Sharp.WebApi.V2.Models.Color> colors;
+
+        private SettingEntry<Gw2Sharp.WebApi.V2.Models.Color[]> colorPickerSettingHusksBar;
 
         // Blockers Friend Service Managers
         private TimerManager husksTimerManager;
@@ -52,24 +61,27 @@ namespace TTBlockersFriend
                 Visible = false,
                 Title = "Blockers stuff",
                 Location = new Point((GameService.Graphics.WindowHeight / 2) - 200, (GameService.Graphics.WindowHeight / 2) - 57), // TODO: fix the initial position .. for whatever reason this returns a windowsize of 800 * 480 (during debugging atleast)
-                Size = new Point(400, 114), // TODO: make size dynamic
+                Size = new Point(400, 134), // TODO: make size dynamic
                 Parent = GameService.Graphics.SpriteScreen,
             };
 
             // Husks stuff
-            husksBar = new ProgressBar()
+            husksBar = new ProgressBar(0)
             {
-                Location = new Point(7, 12),
-                Size = new Point(250, 16),
+                Location = new Point(7, 9),
+                Size = new Point(378, 32),
                 Parent = mainPanel,
                 MaxValue = 80,
-                Value = 80,
+                Value = 0,
+                BarText = "Husks",
             };
             panelButtonHusks = new StandardButton()
             {
                 Text = "Husks",
                 Location = new Point(261, 7),
+                Size = new Point(128, 36),
                 Parent = mainPanel,
+                Visible = false,
             };
             husksTimerManager = new TimerManager()
             {
@@ -78,21 +90,25 @@ namespace TTBlockersFriend
                 TimerBar = husksBar,
             };
             panelButtonHusks.Click += (e, e1) => husksTimerManager.Activate(gatheringSpot, gatheringSpot.HuskTime);
+            husksBar.Click += (e, e1) => husksTimerManager.Activate(gatheringSpot, gatheringSpot.HuskTime);
 
             // Eggs stuff
-            eggsBar = new ProgressBar()
+            eggsBar = new ProgressBar(1)
             {
-                Location = new Point(7, 44),
-                Size = new Point(250, 16),
+                Location = new Point(7, 52),
+                Size = new Point(378, 32),
                 Parent = mainPanel,
                 MaxValue = 40,
-                Value = 40,
+                Value = 0,
+                BarText = "Eggs",
             };
             panelButtonEggs = new StandardButton()
             {
                 Text = "Eggs",
-                Location = new Point(261, 39),
+                Location = new Point(261, 49),
+                Size = new Point(128, 36),
                 Parent = mainPanel,
+                Visible = false,
             };
             eggsTimerManager = new TimerManager()
             {
@@ -101,6 +117,24 @@ namespace TTBlockersFriend
                 TimerBar = eggsBar,
             };
             panelButtonEggs.Click += (e, e1) => eggsTimerManager.Activate(gatheringSpot, 40);
+            eggsBar.Click += (e, e1) => eggsTimerManager.Activate(gatheringSpot, 40);
+        }
+
+        protected override async Task LoadAsync()
+        {
+            colors = await Instance.Gw2ApiManager.Gw2ApiClient.V2.Colors.AllAsync();
+
+            colorPickerSettingHusksBar = SettingsManager.ModuleSettings.DefineSetting("colorPickerSettingHusksBar", new Gw2Sharp.WebApi.V2.Models.Color[] { colors?.First(), colors?.First() },
+                () => null,
+                () => "Toggles the display of data.");
+
+            await base.LoadAsync();
+        }
+
+        public override IView GetSettingsView()
+        {
+            var test = new ColorPickerSettingView(colorPickerSettingHusksBar, colors);
+            return test;
         }
 
         protected override void Unload()
@@ -214,6 +248,8 @@ namespace TTBlockersFriend
                     if (mainPanel.BlockerIconTint != blockerIconTint)
                         mainPanel.BlockerIconTint = blockerIconTint;
                 }
+                else
+                    mainPanel.IsBlocking = false; // hard reset since otherwise we may nt get the update it seems .. TODO: do that in a smarter way
             }
             else if(mainPanel.BlockerIconVisible)
                 mainPanel.BlockerIconVisible = false;

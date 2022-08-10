@@ -67,6 +67,7 @@
     <Compile Include="Data\BlockingCapabilities.cs" />
     <Compile Include="Data\BlockingType.cs" />
     <Compile Include="Module.cs" />
+    <Compile Include="Settings\ColorPickerSettingView.cs" />
     <Compile Include="TimerManager.cs" />
     <Compile Include="UI\ProgressBar.cs" />
     <Compile Include="Data\GatheringSpot.cs" />
@@ -229,11 +230,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ref\Armor_%28attribute%29.png" />
-    <Content Include="ref\back.png" />
+    <Content Include="ref\bar_gradient.png" />
+    <Content Include="ref_not_used\back.png" />
     <Content Include="ref\Closed.png" />
     <Content Include="ref\end_nub.png" />
     <Content Include="ref\marker_icon.png" />
-    <Content Include="ref\middle.png" />
+    <Content Include="ref_not_used\middle.png" />
+    <Content Include="ref\middle_bottom.png" />
+    <Content Include="ref\middle_top.png" />
     <Content Include="ref\right_side.png" />
     <Content Include="ref\side_left.png" />
     <Content Include="ref_not_used\Apply_to_Build_Template.png" />
