@@ -27,9 +27,10 @@ There is also the helper for positioning yourself which is marked by a little ic
 #### Impossible (sitting on a mount)
 ![Panel when you are sitting on a mount](./docs/images/panel_positionhelper_impossible.png)
 
-As a last thing for usage .. you can also change the colors of the bars in the settings (The selection is still WIP for the most part but it works):
+As a last thing for usage .. you can also change the colors of the bars in the settings (The selection is still WIP for the most part but it works). And you can even resize and reposition it (Drag and drop for position on the title bar, resize on the lower right):
 
 ![Panel with changed colors](./docs/images/panel_colors.png)
+![Panel resized](./docs/images/panel_resized.png)
 
 ## Features
 
