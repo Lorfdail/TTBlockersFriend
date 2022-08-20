@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using TTBlockersStuff.Language;
 
-namespace TTBlockersStuff.Settings
+namespace Lorf.BH.TTBlockersStuff.Settings
 {
     /// <summary>
     /// Quick and dirty implementation of a color picker window like the keybinding selector .. same question as for the setting view (although that can maybe be a bit more a special case .. but this?)

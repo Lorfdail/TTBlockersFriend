@@ -2,6 +2,8 @@
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Modules;
 using Blish_HUD.Modules.Managers;
+using Lorf.BH.TTBlockersStuff.Settings;
+using Lorf.BH.TTBlockersStuff.UI;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -9,9 +11,8 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 using TTBlockersStuff.Language;
-using TTBlockersStuff.Settings;
 
-namespace TTBlockersStuff
+namespace Lorf.BH.TTBlockersStuff
 {
     /// <summary>
     /// Main class / entrypoint .. too much logik here but hey it works for the moment

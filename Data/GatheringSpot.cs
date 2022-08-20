@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TTBlockersStuff.Language;
 
-namespace TTBlockersStuff
+namespace Lorf.BH.TTBlockersStuff
 {
     /// <summary>
     /// Basically just the data backing the remaining logic .. short definitions of all the arenas

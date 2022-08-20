@@ -5,7 +5,7 @@ using Blish_HUD.Settings.UI.Views;
 using Microsoft.Xna.Framework;
 using System.Linq;
 
-namespace TTBlockersStuff.Settings
+namespace Lorf.BH.TTBlockersStuff.Settings
 {
     /// <summary>
     /// This needs to exist since you apparently cant add your own setting display type :)

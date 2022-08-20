@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TTBlockersStuff.Language;
 
-namespace TTBlockersStuff.Settings
+namespace Lorf.BH.TTBlockersStuff.Settings
 {
     /// <summary>
     /// Quick and dirty implementation for a ColorPicker settings entry .. why does blish hud not have something like this again?

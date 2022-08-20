@@ -1,9 +1,10 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
+using Lorf.BH.TTBlockersStuff.UI;
 using System;
 using TTBlockersStuff.Language;
 
-namespace TTBlockersStuff
+namespace Lorf.BH.TTBlockersStuff
 {
     /// <summary>
     /// The timer data and button / progress bar control

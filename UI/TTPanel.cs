@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace TTBlockersStuff
+namespace Lorf.BH.TTBlockersStuff.UI
 {
     /// <summary>
     /// Mostly a copy & paste of the "default" blish hud panel since it doesnt allow you to really change the header.

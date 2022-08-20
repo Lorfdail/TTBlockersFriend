@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace TTBlockersStuff
+namespace Lorf.BH.TTBlockersStuff.UI
 {
     /// <summary>
     /// Definetly not mostly a copy pasta of blish huds internal track bar implementation
