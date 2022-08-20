@@ -53,3 +53,4 @@ Feeld free to create an issue or open a discussion if there is anything missing!
 - Audio
 - Class detection (Capabilities for blocking)
 - Hiding the eggs bar (Some people only wanna see the husks)
+- Translations (Only english and german are currently supported .. french, spanish and korean are missing)
