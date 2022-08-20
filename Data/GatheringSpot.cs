@@ -1,18 +1,23 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using TTBlockersStuff.Language;
 
-namespace TTBlockersFriend
+namespace TTBlockersStuff
 {
+    /// <summary>
+    /// Basically just the data backing the remaining logic .. short definitions of all the arenas
+    /// </summary>
     class GatheringSpot
     {
-        public static readonly GatheringSpot Amber = new GatheringSpot("Amber", 90, new Vector2(670.07f, -606.34f), true, 100);
-        public static readonly GatheringSpot Crimson = new GatheringSpot("Crimson", 90, new Vector2(198.5f, -438.5f), true, 100);
-        public static readonly GatheringSpot Cobalt = new GatheringSpot("Cobalt", 80, new Vector2(-277.5f, -878.2f), true, 150);
-        public static readonly GatheringSpot General = new GatheringSpot("Gathering", 0, new Vector2(185f, -83f), false, 100);
-        public static readonly IEnumerable<GatheringSpot> All = new List<GatheringSpot> { Amber, Crimson, Cobalt, General };
+        public readonly static GatheringSpot Amber = new GatheringSpot(Translations.GatheringSpotTitleAmber, 90, new Vector2(670.07f, -606.34f), true, 100);
+        public readonly static GatheringSpot Crimson = new GatheringSpot(Translations.GatheringSpotTitleCrimson, 90, new Vector2(198.5f, -438.5f), true, 100);
+        public readonly static GatheringSpot Cobalt = new GatheringSpot(Translations.GatheringSpotTitleCobalt, 80, new Vector2(-277.5f, -878.2f), true, 150);
+        public readonly static GatheringSpot General = new GatheringSpot(Translations.GatheringspotTitleMain, 90, new Vector2(185f, -83f), false, 100);
+        public readonly static IEnumerable<GatheringSpot> All = new List<GatheringSpot> { Amber, Crimson, Cobalt, General };
 
-        public string Name { get;  }
+        public string Name { get; }
         public int HuskTime { get;  }
         public Vector2 Position { get; }
         public bool IsWurm { get; }

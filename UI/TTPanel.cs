@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace TTBlockersFriend
+namespace TTBlockersStuff
 {
     /// <summary>
     /// Mostly a copy & paste of the "default" blish hud panel since it doesnt allow you to really change the header.
@@ -14,18 +14,19 @@ namespace TTBlockersFriend
     /// </summary>
     class TTPanel : Container
     {
-        // Used when border is enabled
-        public const int TOP_PADDING = 7;
-        public const int RIGHT_PADDING = 4;
-        public const int BOTTOM_PADDING = 7;
-        public const int LEFT_PADDING = 4;
+        // internal accent padding
+        private const int ACCENT_LEFT_MARGIN = 4;
+        private const int ACCENT_BOTTOM_MARGIN = 5;
+        private const int ACCENT_RIGHT_MARGIN = 4;
 
-        public const int HEADER_HEIGHT = 36;
-        private const int MAX_ACCENT_WIDTH = 256;
+        // some more padding for .. stuff
+        private const int RIGHT_PADDING = 15;
+        private const int LEFT_PADDING = 7;
+
+        // header element
+        private const int HEADER_HEIGHT = 36;
 
         // some weird internal textures from blish hud .. getting that stuff by name or via a constant class would be too easy now wouldn't it be? 
-        private static readonly Texture2D _textureCornerAccent = Content.GetTexture("controls/panel/1002144");
-        private static readonly Texture2D _textureLeftSideAccent = Content.GetTexture("605025");
         private static readonly Texture2D _texturePanelHeader = Content.GetTexture("controls/panel/1032325");
         private static readonly Texture2D _texturePanelHeaderActive = Content.GetTexture("controls/panel/1032324");
 
@@ -33,26 +34,32 @@ namespace TTBlockersFriend
         private static readonly Texture2D armorIcon = Module.Instance.ContentsManager.GetTexture("Armor_(attribute).png");
         private static readonly Texture2D markerIcon = Module.Instance.ContentsManager.GetTexture("marker_icon.png");
         private static readonly Texture2D impossibleIcon = Module.Instance.ContentsManager.GetTexture("Closed.png");
+        private static readonly Texture2D resizeCornerInactive = Module.Instance.ContentsManager.GetTexture("resize_corner_inactive.png");
+        private static readonly Texture2D resizeCornerActive = Module.Instance.ContentsManager.GetTexture("resize_corner_active.png");
+        private static readonly Texture2D cornerAccent = Module.Instance.ContentsManager.GetTexture("corner_accent.png");
+        private static readonly Texture2D borderAccent = Module.Instance.ContentsManager.GetTexture("border_accent.png");
 
         // shamelessly stolen from the WindowBase2 stuff
-        private static readonly SettingCollection _windowSettings = Module.Instance.SettingsManager.ModuleSettings.AddSubCollection("TTPanel");
+        private static readonly SettingCollection windowSettings = Module.Instance.SettingsManager.ModuleSettings.AddSubCollection("TTPanel");
 
         // all the different layout bounds
-        private Rectangle _layoutHeaderBounds;
-        private Rectangle _layoutHeaderTextBounds;
-        private Rectangle _layoutTopLeftAccentBounds;
-        private Rectangle _layoutBottomRightAccentBounds;
-        private Rectangle _layoutCornerAccentSrc;
-        private Rectangle _layoutLeftAccentBounds;
-        private Rectangle _layoutLeftAccentSrc;
+        private Rectangle layoutHeaderBounds;
+        private Rectangle layoutHeaderTextBounds;
+        private Rectangle layoutTopLeftAccentBounds;
+        private Rectangle layoutBottomRightAccentBounds;
+        private Rectangle layoutCornerAccentSrc;
+        private Rectangle layoutLeftAccentBounds;
+        private Rectangle layoutInternalBounds;
+        private Rectangle resizeHandleBounds;
 
-        private Point _dragStart = Point.Zero;
+        private Point dragStart;
+        private Point resizeStart;
 
-        private bool _dragging;
+        private bool dragging;
         public bool Dragging
         {
-            get => _dragging;
-            private set => SetProperty(ref _dragging, value);
+            get => dragging;
+            private set => SetProperty(ref dragging, value);
         }
 
         /// <summary>
@@ -105,14 +112,24 @@ namespace TTBlockersFriend
             set => SetProperty(ref blockerIconTint, value);
         }
 
+        private bool resizing;
+        /// <summary>
+        /// Indicates if the window is actively being resized.
+        /// </summary>
+        public bool Resizing
+        {
+            get => resizing;
+            private set => SetProperty(ref resizing, value);
+        }
+
         /// <summary>
         /// Title that is shown at the top
         /// </summary>
-        protected string _title;
+        protected string title;
         public string Title
         {
-            get => _title;
-            set => SetProperty(ref _title, value, true);
+            get => title;
+            set => SetProperty(ref title, value, false);
         }
 
         /// <summary>
@@ -122,25 +139,52 @@ namespace TTBlockersFriend
         public bool TargetVisibility
         {
             get => targetVisibility;
-            set => SetProperty(ref targetVisibility, value, true);
+            set => SetProperty(ref targetVisibility, value, false);
         }
+
+        // This exists for the main reason hat the accents kinda limit the original space but not enough to be the ContentRegion
+        protected int InternalWidth { get => Width - ACCENT_LEFT_MARGIN - ACCENT_RIGHT_MARGIN; }
+        protected int InternalHeight { get => Height - ACCENT_BOTTOM_MARGIN; }
 
         public TTPanel()
         {
             // necessary for drag and drop since the usual mouse release bugs out 
             GameService.Input.Mouse.LeftMouseButtonReleased += OnGlobalMouseRelease;
+            resizeHandleBounds = Rectangle.Empty;
+            dragStart = Point.Zero;
+            resizeStart = Point.Zero;
         }
 
+        /// <summary>
+        /// Modifies the window size as it's being resized.
+        /// </summary>
+        protected virtual Point HandleWindowResize(Point newSize)
+        {
+            return new Point(
+                MathHelper.Clamp(newSize.X, 250, (int) (GameService.Graphics.Resolution.X / GameService.Graphics.UIScaleMultiplier)), // 250 here is a made up value which looked nice for me
+                MathHelper.Clamp(newSize.Y, HEADER_HEIGHT + ACCENT_BOTTOM_MARGIN, (int) (GameService.Graphics.Resolution.Y / GameService.Graphics.UIScaleMultiplier))
+            );
+        }
+
+        /// <summary>
+        /// Updates some calculated components of the element (dragging, resizing, fading, ..)
+        /// </summary>
         public override void UpdateContainer(GameTime gameTime)
         {
             if (Dragging)
             {
-                Location += Input.Mouse.Position - _dragStart;
-                _dragStart = Input.Mouse.Position;
+                Location += Input.Mouse.Position - dragStart;
+                dragStart = Input.Mouse.Position;
+            }
+            else if (Resizing)
+            {
+                var nOffset = Input.Mouse.Position - dragStart;
+                Size = HandleWindowResize(resizeStart + nOffset);
             }
 
             // for now this is the fancy fading effect of the entire panel .. should be a window mask but this was a 5 minute implementation and works without a flaw
-            if(Visible != TargetVisibility || _opacity != 0 || _opacity != 1)
+            // and yes i dont like this tweener stuff
+            if (Visible != TargetVisibility || _opacity != 0 || _opacity != 1)
             {
                 if (TargetVisibility)
                     Opacity = MathHelper.Clamp(Opacity + (float)(gameTime.ElapsedGameTime.TotalMilliseconds / 200), 0, 1);
@@ -153,91 +197,131 @@ namespace TTBlockersFriend
             base.UpdateContainer(gameTime);
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// The usual recalculation of all major layout components .. nothing fancy
+        /// </summary>
         public override void RecalculateLayout()
         {
-            bool showsHeader = !string.IsNullOrEmpty(_title);
+            layoutInternalBounds = new Rectangle(ACCENT_LEFT_MARGIN, 0, InternalWidth, InternalHeight);
 
-            int topOffset = Math.Max(TOP_PADDING, showsHeader ? HEADER_HEIGHT : 0);
-            int rightOffset = RIGHT_PADDING;
-            int bottomOffset = BOTTOM_PADDING;
-            int leftOffset = LEFT_PADDING;
+            // header layout
+            layoutHeaderBounds = new Rectangle(ACCENT_LEFT_MARGIN, 0, InternalWidth, HEADER_HEIGHT);
+            layoutHeaderTextBounds = new Rectangle(
+                layoutHeaderBounds.X + LEFT_PADDING + (BlockerIconVisible ? markerIcon.Width + (LEFT_PADDING - ACCENT_LEFT_MARGIN) : 0), 
+                layoutHeaderBounds.Y, 
+                layoutHeaderBounds.Width - RIGHT_PADDING - LEFT_PADDING, 
+                layoutHeaderBounds.Height
+            );
 
-            // Corner accents
-            int cornerAccentWidth = Math.Min(_size.X, MAX_ACCENT_WIDTH);
-            _layoutTopLeftAccentBounds = new Rectangle(-2, topOffset - 12, cornerAccentWidth, _textureCornerAccent.Height);
+            // all the fancy border stuff
+            resizeHandleBounds = new Rectangle(
+                Width - resizeCornerInactive.Width,
+                Height - resizeCornerInactive.Height,
+                resizeCornerInactive.Width,
+                resizeCornerInactive.Height
+            );
 
-            _layoutBottomRightAccentBounds = new Rectangle(_size.X - cornerAccentWidth + 2, _size.Y - 59, cornerAccentWidth, _textureCornerAccent.Height);
+            int cornerAccentWidth = Math.Min(Width, cornerAccent.Width);
+            layoutTopLeftAccentBounds = new Rectangle(0, HEADER_HEIGHT - 6, cornerAccentWidth, cornerAccent.Height);
+            layoutBottomRightAccentBounds = new Rectangle(Width - cornerAccentWidth, Height - cornerAccent.Height, cornerAccentWidth, cornerAccent.Height);
+            layoutCornerAccentSrc = new Rectangle(0, 0, cornerAccentWidth, cornerAccent.Height);
+            layoutLeftAccentBounds = new Rectangle(ACCENT_LEFT_MARGIN, HEADER_HEIGHT, borderAccent.Width, Math.Min(InternalHeight - HEADER_HEIGHT, borderAccent.Height));
 
-            _layoutCornerAccentSrc = new Rectangle(MAX_ACCENT_WIDTH - cornerAccentWidth, 0, cornerAccentWidth, _textureCornerAccent.Height);
-
-            // Left side accent
-            _layoutLeftAccentBounds = new Rectangle(leftOffset - 7, topOffset, _textureLeftSideAccent.Width, Math.Min(_size.Y - topOffset - bottomOffset, _textureLeftSideAccent.Height));
-            _layoutLeftAccentSrc = new Rectangle(0, 0, _textureLeftSideAccent.Width, _layoutLeftAccentBounds.Height);
-
-            ContentRegion = new Rectangle(leftOffset, topOffset, _size.X - leftOffset - rightOffset, _size.Y - topOffset - bottomOffset);
-
-            _layoutHeaderBounds = new Rectangle(ContentRegion.Left, 0, ContentRegion.Width, HEADER_HEIGHT);
-            _layoutHeaderTextBounds = new Rectangle(_layoutHeaderBounds.Left + 10 + (BlockerIconVisible ? 26 : 0), 0, _layoutHeaderBounds.Width - 10, HEADER_HEIGHT);
+            // content layout
+            ContentRegion = new Rectangle(ACCENT_LEFT_MARGIN, HEADER_HEIGHT, InternalWidth, InternalHeight - HEADER_HEIGHT);
         }
 
+        /// <summary>
+        /// Initial drawing of the main elements
+        /// </summary>
         public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds)
         {
-            spriteBatch.DrawOnCtrl(this, _texturePanelHeader, _layoutHeaderBounds);
+            // Slightly tint the background of the panel
+            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, layoutInternalBounds, Color.Black * 0.1f);     
 
             // Panel header
-            if (_mouseOver && RelativeMousePosition.Y <= HEADER_HEIGHT)
-                spriteBatch.DrawOnCtrl(this, _texturePanelHeaderActive, _layoutHeaderBounds);
-            else
-                spriteBatch.DrawOnCtrl(this, _texturePanelHeader, _layoutHeaderBounds);
-
-            // Panel header text
-            spriteBatch.DrawStringOnCtrl(this, _title, Content.DefaultFont16, _layoutHeaderTextBounds, Color.White);
+            spriteBatch.DrawOnCtrl(this, _mouseOver && RelativeMousePosition.Y <= HEADER_HEIGHT ? _texturePanelHeaderActive : _texturePanelHeader, layoutHeaderBounds);
+            spriteBatch.DrawStringOnCtrl(this, title, Content.DefaultFont16, layoutHeaderTextBounds, Color.White);
             
-            // Lightly tint the background of the panel
-            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, ContentRegion, Color.Black * 0.1f);
+            // Accents!
+            spriteBatch.DrawOnCtrl(this, cornerAccent, layoutTopLeftAccentBounds, layoutCornerAccentSrc, Color.White, 0, Vector2.Zero, SpriteEffects.FlipHorizontally);
+            spriteBatch.DrawOnCtrl(this, cornerAccent, layoutBottomRightAccentBounds, layoutCornerAccentSrc, Color.White, 0, Vector2.Zero, SpriteEffects.FlipVertically);
+            spriteBatch.DrawOnCtrl(this, borderAccent, layoutLeftAccentBounds, layoutLeftAccentBounds, Color.Black, 0, Vector2.Zero, SpriteEffects.None);
 
-            PaintAccents(spriteBatch);
-
+            // le fancy icon!
             if (blockerIconVisible)
             {
+                // actually still too much "magic" here but for version 0.1.0 .. eh :P
                 Texture2D icon = isMounted ? impossibleIcon : (isBlocking ? armorIcon : markerIcon);
-                spriteBatch.DrawOnCtrl(this, icon, new Rectangle(LEFT_PADDING + 18, 18, 26, 26), icon.Bounds, isMounted ? Color.White : blockerIconTint, isMounted ? 0 : blockerIconRotation, new Vector2(icon.Width / 2, icon.Height / 2));
+                spriteBatch.DrawOnCtrl(this, icon, new Rectangle(ACCENT_LEFT_MARGIN + 18, 18, 26, 26), icon.Bounds, isMounted ? Color.White : blockerIconTint, isMounted ? 0 : blockerIconRotation, new Vector2(icon.Width / 2, icon.Height / 2));
             }
         }
 
-        private void PaintAccents(SpriteBatch spriteBatch)
+        /// <summary>
+        /// Mostly the resize icon .. needs to happen here since otherwise child elements could overlap and "hide" this.
+        /// </summary>
+        public override void PaintAfterChildren(SpriteBatch spriteBatch, Rectangle bounds)
         {
-            // Top left accent
-            spriteBatch.DrawOnCtrl(this, _textureCornerAccent, _layoutTopLeftAccentBounds, _layoutCornerAccentSrc, Color.White, 0, Vector2.Zero, SpriteEffects.FlipHorizontally);
-
-            // Bottom right accent
-            spriteBatch.DrawOnCtrl(this, _textureCornerAccent, _layoutBottomRightAccentBounds, _layoutCornerAccentSrc, Color.White, 0, Vector2.Zero, SpriteEffects.FlipVertically);
-
-            // Left side accent
-            spriteBatch.DrawOnCtrl(this, _textureLeftSideAccent, _layoutLeftAccentBounds, _layoutLeftAccentSrc, Color.Black, 0, Vector2.Zero, SpriteEffects.FlipVertically);
+            Texture2D iconTexture = resizeHandleBounds.Contains(RelativeMousePosition) || Resizing ? resizeCornerActive : resizeCornerInactive;
+            spriteBatch.DrawOnCtrl(this, iconTexture, resizeHandleBounds);
+                
+            base.PaintAfterChildren(spriteBatch, bounds);
         }
 
+        /// <summary>
+        /// Start of both resizing and dragging
+        /// </summary>
         protected override void OnLeftMouseButtonPressed(MouseEventArgs e)
         {
-            if (_mouseOver && RelativeMousePosition.Y <= HEADER_HEIGHT)
+            if (resizeHandleBounds.Contains(RelativeMousePosition))
+            {
+                Resizing = true;
+                resizeStart = Size;
+                dragStart = Input.Mouse.Position;
+            }
+            else if (_mouseOver && RelativeMousePosition.Y <= HEADER_HEIGHT)
             {
                 Dragging = true;
-                _dragStart = Input.Mouse.Position;
+                dragStart = Input.Mouse.Position;
             }
 
             base.OnLeftMouseButtonPressed(e);
         }
 
+        /// <summary>
+        /// End of both resizing and dragging + saving their respective settings
+        /// </summary>
         protected void OnGlobalMouseRelease(object sender, MouseEventArgs e)
         {
-            if (Visible && Dragging)
+            if (!Visible)
+                return;
+
+            if (Dragging || Resizing)
             {
-                (_windowSettings["main"] as SettingEntry<Point> ?? _windowSettings.DefineSetting("main", _dragStart)).Value = Location;
+                (windowSettings["location"] as SettingEntry<Point> ?? windowSettings.DefineSetting("location", dragStart)).Value = Location;
+                (windowSettings["size"] as SettingEntry<Point> ?? windowSettings.DefineSetting("size", resizeStart)).Value = Size;
+
+                if (Resizing)
+                    OnResized(new ResizedEventArgs(resizeStart, Size));
+
                 Dragging = false;
+                Resizing = false;
+            }
+            else
+            {
+                // Meh .. resize handle overlaps with lower right child element .. since i dont want a margin to the moon and back let's just handle click events ourself
+                // Can't we get some nice fancy proper handling for this somehow? besides the fact that you cant mark click events as handled
+                foreach (Control child in Children)
+                {
+                    if (child is TimerBar pb && pb.LocalBounds.OffsetBy(ContentRegion.Location).Contains(RelativeMousePosition))
+                        pb.OnInternalClick(this, e);
+                }
             }
         }
 
+        /// <summary>
+        /// Makes the Panel invisible with a small fade out animation
+        /// </summary>
         public override void Hide()
         {
             if (!TargetVisibility) 
@@ -247,21 +331,74 @@ namespace TTBlockersFriend
             Dragging = false;
         }
 
+        /// <summary>
+        /// Makes the Panel visible with a small fade in animation
+        /// </summary>
         public override void Show()
         {
             if (TargetVisibility)
                 return;
             TargetVisibility = true;
 
-            if (_windowSettings.TryGetSetting("main", out var windowPosition))
-                Location = (windowPosition as SettingEntry<Point> ?? new SettingEntry<Point>()).Value;
+            // Load size setting or apply default value
+            if (windowSettings.TryGetSetting("size", out var windowSize))
+            {
+                var setting = windowSize as SettingEntry<Point>;
+                if (setting == null)
+                {
+                    setting = new SettingEntry<Point>();
+                    setting.Value = new Point(400, 120);
+                }
+                Size = setting.Value;
+            }
+            else
+                Size = new Point(400, 120);
+
+            // Load location setting or apply default value
+            if (windowSettings.TryGetSetting("location", out var windowPosition))
+            {
+                var setting = windowPosition as SettingEntry<Point>;
+                if (setting == null)
+                {
+                    setting = new SettingEntry<Point>();
+                    setting.Value = GetDefaultLocation();
+                }
+                Location = setting.Value;
+            }
+            else
+                Location = GetDefaultLocation();
 
             base.Show();
         }
 
+        /// <summary>
+        /// In short .. in the center of the screen
+        /// </summary>
+        private Point GetDefaultLocation()
+        {
+            return new Point(
+                (int)(GameService.Graphics.Resolution.X / GameService.Graphics.UIScaleMultiplier / 2) - (Width / 2), // half the width
+                (int)(GameService.Graphics.Resolution.Y / GameService.Graphics.UIScaleMultiplier / 2) - (Height / 2) // half the height
+            );
+        }
+
+        /// <summary>
+        /// Default disposing stuff .. only thing we really have to worry about here is the OnGlobalMouseRelease
+        /// </summary>
         protected override void DisposeControl()
         {
             GameService.Input.Mouse.LeftMouseButtonReleased -= OnGlobalMouseRelease;
+
+            _texturePanelHeader?.Dispose();
+            _texturePanelHeaderActive?.Dispose();
+            armorIcon?.Dispose();
+            markerIcon?.Dispose();
+            impossibleIcon?.Dispose();
+            resizeCornerInactive?.Dispose();
+            resizeCornerActive?.Dispose();
+            cornerAccent?.Dispose();
+            borderAccent?.Dispose();
+
             base.DisposeControl();
         }
     }

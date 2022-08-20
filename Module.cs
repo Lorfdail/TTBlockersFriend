@@ -1,18 +1,17 @@
 ﻿using Blish_HUD;
-using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Modules;
 using Blish_HUD.Modules.Managers;
-using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
-using TTBlockersFriend.Settings;
+using TTBlockersStuff.Language;
+using TTBlockersStuff.Settings;
 
-namespace TTBlockersFriend
+namespace TTBlockersStuff
 {
     /// <summary>
     /// Main class / entrypoint .. too much logik here but hey it works for the moment
@@ -20,21 +19,19 @@ namespace TTBlockersFriend
     [Export(typeof(Blish_HUD.Modules.Module))]
     public class Module : Blish_HUD.Modules.Module
     {
+        private const int PROGRESS_BAR_MARGIN = 7;
+
         private static readonly Logger Logger = Logger.GetLogger<Module>();
         public static Module Instance;
 
         // UI Elements
         private TTPanel mainPanel;
-        private ProgressBar husksBar;
-        private ProgressBar eggsBar;
-        private StandardButton panelButtonHusks;
-        private StandardButton panelButtonEggs;
+        private TimerBar husksBar;
+        private TimerBar eggsBar;
 
         // Data
         private GatheringSpot gatheringSpot;
-        private IEnumerable<Gw2Sharp.WebApi.V2.Models.Color> colors;
-
-        private SettingEntry<Gw2Sharp.WebApi.V2.Models.Color[]> colorPickerSettingHusksBar;
+        public IEnumerable<Gw2Sharp.WebApi.V2.Models.Color> Colors;
 
         // Blockers Friend Service Managers
         private TimerManager husksTimerManager;
@@ -49,102 +46,112 @@ namespace TTBlockersFriend
         [ImportingConstructor]
         public Module([Import("ModuleParameters")] ModuleParameters moduleParameters) : base(moduleParameters) 
         {
+            // UwU
             Instance = this;
         }
 
         protected override void Initialize()
         {
-            Logger.Info("Initializing TT Blockers Friend");
+            Logger.Info("Initializing TT Blockers Stuff");
 
             mainPanel = new TTPanel()
             {
-                Visible = false,
-                Title = "Blockers stuff",
-                Location = new Point((GameService.Graphics.WindowHeight / 2) - 200, (GameService.Graphics.WindowHeight / 2) - 57), // TODO: fix the initial position .. for whatever reason this returns a windowsize of 800 * 480 (during debugging atleast)
-                Size = new Point(400, 134), // TODO: make size dynamic
+                Title = "Blockers Stuff",
                 Parent = GameService.Graphics.SpriteScreen,
             };
 
             // Husks stuff
-            husksBar = new ProgressBar(0)
+            husksBar = new TimerBar(TimerBar.Husks)
             {
-                Location = new Point(7, 9),
-                Size = new Point(378, 32),
+                Location = new Point(PROGRESS_BAR_MARGIN, PROGRESS_BAR_MARGIN),
+                Size = new Point(mainPanel.ContentRegion.Width - (PROGRESS_BAR_MARGIN * 2), (mainPanel.ContentRegion.Height / 2) - PROGRESS_BAR_MARGIN - (PROGRESS_BAR_MARGIN / 2)),
                 Parent = mainPanel,
                 MaxValue = 80,
-                Value = 0,
-                BarText = "Husks",
+                Value = 80,
+                BarText = $"{Translations.TimerBarTextHusks} ({Translations.TimerBarTextReady})",
             };
-            panelButtonHusks = new StandardButton()
+            mainPanel.Resized += (previousSize, currentSize) =>
             {
-                Text = "Husks",
-                Location = new Point(261, 7),
-                Size = new Point(128, 36),
-                Parent = mainPanel,
-                Visible = false,
+                husksBar.Width = mainPanel.ContentRegion.Width - (PROGRESS_BAR_MARGIN * 2);
+                husksBar.Height = (mainPanel.ContentRegion.Height / 2) - PROGRESS_BAR_MARGIN - (PROGRESS_BAR_MARGIN / 2);
+                husksBar.RecalculateLayout();
             };
             husksTimerManager = new TimerManager()
             {
-                Name = "Husks",
-                PanelButton = panelButtonHusks,
+                Name = Translations.TimerBarTextHusks,
                 TimerBar = husksBar,
             };
-            panelButtonHusks.Click += (e, e1) => husksTimerManager.Activate(gatheringSpot, gatheringSpot.HuskTime);
-            husksBar.Click += (e, e1) => husksTimerManager.Activate(gatheringSpot, gatheringSpot.HuskTime);
+            husksBar.InternalClick += (e, e1) => 
+            {
+                GameService.Content.PlaySoundEffectByName(@"button-click");
+                husksTimerManager.Activate(gatheringSpot.HuskTime);
+            };
 
             // Eggs stuff
-            eggsBar = new ProgressBar(1)
+            eggsBar = new TimerBar(TimerBar.Eggs)
             {
-                Location = new Point(7, 52),
-                Size = new Point(378, 32),
+                Location = new Point(PROGRESS_BAR_MARGIN, husksBar.Location.Y + husksBar.Size.Y + PROGRESS_BAR_MARGIN),
+                Size = new Point(mainPanel.ContentRegion.Width - (PROGRESS_BAR_MARGIN * 2), (mainPanel.ContentRegion.Height / 2) - PROGRESS_BAR_MARGIN - (PROGRESS_BAR_MARGIN / 2)),
                 Parent = mainPanel,
                 MaxValue = 40,
-                Value = 0,
-                BarText = "Eggs",
+                Value = 40,
+                BarText = $"{Translations.TimerBarTextEggs} ({Translations.TimerBarTextReady})",
             };
-            panelButtonEggs = new StandardButton()
+            mainPanel.Resized += (previousSize, currentSize) =>
             {
-                Text = "Eggs",
-                Location = new Point(261, 49),
-                Size = new Point(128, 36),
-                Parent = mainPanel,
-                Visible = false,
+                eggsBar.Width = mainPanel.ContentRegion.Width - (PROGRESS_BAR_MARGIN * 2);
+                eggsBar.Height = (mainPanel.ContentRegion.Height / 2) - PROGRESS_BAR_MARGIN - (PROGRESS_BAR_MARGIN / 2);
+                eggsBar.Location = new Point(PROGRESS_BAR_MARGIN, husksBar.Location.Y + husksBar.Size.Y + PROGRESS_BAR_MARGIN);
+                eggsBar.RecalculateLayout();
             };
             eggsTimerManager = new TimerManager()
             {
-                Name = "Eggs",
-                PanelButton = panelButtonEggs,
+                Name = Translations.TimerBarTextEggs,
                 TimerBar = eggsBar,
             };
-            panelButtonEggs.Click += (e, e1) => eggsTimerManager.Activate(gatheringSpot, 40);
-            eggsBar.Click += (e, e1) => eggsTimerManager.Activate(gatheringSpot, 40);
+            eggsBar.InternalClick += (e, e1) =>
+            {
+                GameService.Content.PlaySoundEffectByName(@"button-click"); 
+                eggsTimerManager.Activate(40);
+            };
         }
 
         protected override async Task LoadAsync()
         {
-            colors = await Instance.Gw2ApiManager.Gw2ApiClient.V2.Colors.AllAsync();
+            // i will get my default color even if its the last thing i do
+            Colors = new List<Gw2Sharp.WebApi.V2.Models.Color>() 
+            { 
+                new Gw2Sharp.WebApi.V2.Models.Color()
+                {
+                    Name = "Default",
+                    Cloth = new Gw2Sharp.WebApi.V2.Models.ColorMaterial()
+                    {
+                        Rgb = new List<int>() { 237, 121, 38 },
+                    }
+                } 
+            }.Concat(await Instance.Gw2ApiManager.Gw2ApiClient.V2.Colors.AllAsync());
 
-            colorPickerSettingHusksBar = SettingsManager.ModuleSettings.DefineSetting("colorPickerSettingHusksBar", new Gw2Sharp.WebApi.V2.Models.Color[] { colors?.First(), colors?.First() },
-                () => null,
-                () => "Toggles the display of data.");
+            SettingsManager.ModuleSettings.DefineSetting("colorPickerSettingTimerBar0", Colors?.First(),
+                () => Translations.SettingColorSelectionHusksText,
+                () => Translations.SettingColorSelectionHusksTooltipText);
+            SettingsManager.ModuleSettings.DefineSetting("colorPickerSettingTimerBar1", Colors?.First(),
+                () => Translations.SettingColorSelectionEggsText,
+                () => Translations.SettingColorSelectionEggsTooltipText);
 
             await base.LoadAsync();
         }
 
         public override IView GetSettingsView()
         {
-            var test = new ColorPickerSettingView(colorPickerSettingHusksBar, colors);
-            return test;
+            return new TTSettingsCollection(SettingsManager.ModuleSettings);
         }
 
         protected override void Unload()
         {
-            Logger.Info("Unloading TT Blockers Friend");
+            Logger.Info("Unloading TT Blockers Stuff");
             mainPanel?.Dispose();
             husksBar?.Dispose();
-            panelButtonHusks?.Dispose();
             eggsBar?.Dispose();
-            panelButtonEggs?.Dispose();
             Instance = null;
         }
 
@@ -186,78 +193,56 @@ namespace TTBlockersFriend
             }
 
             // this right here is about the most complex stuff you will find here .. all of this controls that one little icon next to the title
-            // - 3 distance checks based on the character being 5, 1 and .35 units away from the gathering spot
+            // - 3 distance checks based on the character being 10, 1 and .35 units away from the gathering spot
             // - fancy pointer rotation based on the camera and rotation
             // - detects if the player is mounted and therefore shows a "you can't block mate" icon
             // - color tint based on the distance indicating if a moving entitie gets closer or further away based on a color change of the compass icon
             // - note: i know this can be improved like many other things but for now it works 
-            bool isInMajorBlockRange = Vector2.Distance(gatheringSpot.Position, vec2Pos) < 5f;
+            bool isInMajorBlockRange = Vector2.Distance(gatheringSpot.Position, vec2Pos) < 10f;
+
+            if (mainPanel.BlockerIconVisible != isInMajorBlockRange)
+                mainPanel.BlockerIconVisible = isInMajorBlockRange;
+
             if (isInMajorBlockRange)
             {
+                bool isInMiddleBlockRange = Vector2.Distance(gatheringSpot.Position, vec2Pos) < 1f;
+                bool isInBlockRange = Vector2.Distance(gatheringSpot.Position, vec2Pos) < .35f;
                 bool isMounted = GameService.Gw2Mumble.PlayerCharacter.CurrentMount != Gw2Sharp.Models.MountType.None;
+
                 if (mainPanel.IsMounted != isMounted)
                     mainPanel.IsMounted = isMounted;
 
-                if (mainPanel.BlockerIconVisible != isInMajorBlockRange)
-                    mainPanel.BlockerIconVisible = isInMajorBlockRange;
+                if (mainPanel.IsBlocking != isInBlockRange)
+                    mainPanel.IsBlocking = isInBlockRange;
 
-                if (!isMounted)
+                if (isInBlockRange)
                 {
-                    Color blockerIconTint;
+                    if (mainPanel.BlockerIconRotation != 0f)
+                        mainPanel.BlockerIconRotation = 0f;
 
-                    bool isInMiddleBlockRange = Vector2.Distance(gatheringSpot.Position, vec2Pos) < 1f;
-                    bool isInBlockRange = false;
-                    if (isInMiddleBlockRange)
-                    {
-                        isInBlockRange = Vector2.Distance(gatheringSpot.Position, vec2Pos) < .35f;
-                        if (isInBlockRange)
-                        {
-                            if (mainPanel.IsBlocking != isInBlockRange)
-                                mainPanel.IsBlocking = isInBlockRange;
-
-                            if (mainPanel.BlockerIconRotation != 0f)
-                                mainPanel.BlockerIconRotation = 0f;
-
-                            blockerIconTint = Color.LawnGreen;
-                        }
-                        else
-                        {
-                            if (mainPanel.IsBlocking)
-                                mainPanel.IsBlocking = false;
-
-                            blockerIconTint = new Color((Vector2.Distance(gatheringSpot.Position, vec2Pos) - .35f) / .65f + .486f, (Vector2.Distance(gatheringSpot.Position, vec2Pos) - .35f) / .65f + .988f, 0f, 1f);
-                        }
-                    }
-                    else
-                        blockerIconTint = new Color(1f, 1f - ((Vector2.Distance(gatheringSpot.Position, vec2Pos) - 1f) / 4f), 0f, 1f);
-
-                    if (!isInBlockRange)
-                    {
-                        // rotation calculation of the angle between the players camera and the spot where the target (gathering spot location) is .. rotates a little compass icon in the title 
-                        Vector2 playerChameraDirection = new Vector2(GameService.Gw2Mumble.PlayerCamera.Position.X, GameService.Gw2Mumble.PlayerCamera.Position.Y) - new Vector2(GameService.Gw2Mumble.PlayerCharacter.Position.X, GameService.Gw2Mumble.PlayerCharacter.Position.Y);
-                        Vector2 targetDirection = gatheringSpot.Position - new Vector2(GameService.Gw2Mumble.PlayerCharacter.Position.X, GameService.Gw2Mumble.PlayerCharacter.Position.Y);
-
-                        double sin = playerChameraDirection.X * targetDirection.Y - targetDirection.X * playerChameraDirection.Y;
-                        double cos = playerChameraDirection.X * targetDirection.X + playerChameraDirection.Y * targetDirection.Y;
-
-                        float angle = MathHelper.ToRadians((float)(Math.Atan2(cos, sin) * (180 / Math.PI)));
-
-                        mainPanel.BlockerIconRotation = angle;
-                    }
-
-                    if (mainPanel.BlockerIconTint != blockerIconTint)
-                        mainPanel.BlockerIconTint = blockerIconTint;
+                    mainPanel.BlockerIconTint = Color.LawnGreen;
                 }
                 else
-                    mainPanel.IsBlocking = false; // hard reset since otherwise we may nt get the update it seems .. TODO: do that in a smarter way
+                {
+                    // rotation calculation of the angle between the players camera and the spot where the target (gathering spot location) is .. rotates a little compass icon in the title 
+                    Vector2 playerChameraDirection = new Vector2(GameService.Gw2Mumble.PlayerCamera.Position.X, GameService.Gw2Mumble.PlayerCamera.Position.Y) - new Vector2(GameService.Gw2Mumble.PlayerCharacter.Position.X, GameService.Gw2Mumble.PlayerCharacter.Position.Y);
+                    Vector2 targetDirection = gatheringSpot.Position - new Vector2(GameService.Gw2Mumble.PlayerCharacter.Position.X, GameService.Gw2Mumble.PlayerCharacter.Position.Y);
+
+                    double sin = playerChameraDirection.X * targetDirection.Y - targetDirection.X * playerChameraDirection.Y;
+                    double cos = playerChameraDirection.X * targetDirection.X + playerChameraDirection.Y * targetDirection.Y;
+
+                    float angle = MathHelper.ToRadians((float)(Math.Atan2(cos, sin) * (180 / Math.PI)));
+
+                    mainPanel.BlockerIconRotation = angle;
+
+                    if (isInMiddleBlockRange)
+                        mainPanel.BlockerIconTint = new Color((Vector2.Distance(gatheringSpot.Position, vec2Pos) - .35f) / .65f + .486f, (Vector2.Distance(gatheringSpot.Position, vec2Pos) - .35f) / .65f + .988f, 0f, 1f);
+                    else if (isInMajorBlockRange)
+                        mainPanel.BlockerIconTint = new Color(1f, 1f - ((Vector2.Distance(gatheringSpot.Position, vec2Pos) - 1f) / 9f), 0f, 1f);
+                }
             }
-            else if(mainPanel.BlockerIconVisible)
-                mainPanel.BlockerIconVisible = false;
 
-            if (!gatheringSpot.IsWurm)
-                return;
-
-            // just simply update the timers once we are at a wurm spot
+            // just simply update the timers once we are at a gathering spot
             husksTimerManager.Update();
             eggsTimerManager.Update();
         }

@@ -1,8 +1,9 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
 using System;
+using TTBlockersStuff.Language;
 
-namespace TTBlockersFriend
+namespace TTBlockersStuff
 {
     /// <summary>
     /// The timer data and button / progress bar control
@@ -13,30 +14,23 @@ namespace TTBlockersFriend
 
         public string Name { get; set; }
         public bool Active { get; private set; }
-        public StandardButton PanelButton { get; set; }
-        public ProgressBar TimerBar { get; set; }
+        public TimerBar TimerBar { get; set; }
 
         private DateTime targetTime;
 
         public void Reset()
         {
             targetTime = DateTime.MinValue;
-            PanelButton.Text = Name;
             TimerBar.MaxValue = 1f;
-            TimerBar.Value = 0f;
+            TimerBar.Value = 1f;
         }
 
-        public void Activate(GatheringSpot gatheringSpot, int time)
+        public void Activate(int time)
         {
             var pos = GameService.Gw2Mumble.PlayerCharacter.Position;
-            Logger.Debug($"{Name} pressed (x: {pos.X}, y: {pos.Y}, z: {pos.Z})");
+            Logger.Debug($"Timer {Name} activated (x: {pos.X}, y: {pos.Y}, z: {pos.Z}, time: {time})");
 
-            if (!gatheringSpot.IsWurm)
-                return;
-
-            var now = DateTime.UtcNow;
-            targetTime = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second);
-            targetTime = targetTime.AddSeconds(time);
+            targetTime = DateTime.UtcNow.AddSeconds(time);
             TimerBar.MaxValue = time;
             Active = true;
         }
@@ -47,25 +41,19 @@ namespace TTBlockersFriend
                 return;
 
             var now = DateTime.UtcNow;
-            var secondsNow = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second);
+            var secondsRemaining = (targetTime - now).TotalSeconds;
 
-            if (targetTime >= secondsNow)
+            if (targetTime > now && secondsRemaining > 1)
             {
-                PanelButton.Text = $"{Name} ({(int)(targetTime - secondsNow).TotalSeconds}s)";
-                TimerBar.BarText = PanelButton.Text;
+                TimerBar.BarText = $"{Name} ({(int)secondsRemaining}s)";
                 TimerBar.Value = TimerBar.MaxValue - ((float)((targetTime - now).TotalMilliseconds / 1000));
-                if ((targetTime - secondsNow).TotalSeconds == 0)
-                {
-                    Active = false;
-                    ScreenNotification.ShowNotification(Name + " ready!", ScreenNotification.NotificationType.Info);
-                    PanelButton.Text = Name + " (ready)";
-                    TimerBar.BarText = Name + " (ready)";
-                }
             }
             else
             {
-                PanelButton.Text = Name + " (ready)";
-                TimerBar.BarText = Name + " (ready)";
+                Active = false;
+                ScreenNotification.ShowNotification(Name + " " + Translations.TimerBarTextReady + "!", ScreenNotification.NotificationType.Info);
+                TimerBar.BarText = $"{Name} ({Translations.TimerBarTextReady})";
+                TimerBar.Value = TimerBar.MaxValue;
             }
         }
     }

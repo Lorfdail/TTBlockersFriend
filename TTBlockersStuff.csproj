@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{4833DD41-BCA4-45EE-A3B2-6B393DD74622}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>TTBlockersFriend</RootNamespace>
-    <AssemblyName>TTBlockersFriend</AssemblyName>
+    <RootNamespace>TTBlockersStuff</RootNamespace>
+    <AssemblyName>TTBlockersStuff</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -62,14 +62,22 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <None Include="Readme.md" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\BlockingCapabilities.cs" />
     <Compile Include="Data\BlockingType.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Settings\ColorPickerSettingView.cs" />
+    <Compile Include="Settings\ColorPickerWindow.cs" />
+    <Compile Include="Settings\TTSettingsCollection.cs" />
     <Compile Include="TimerManager.cs" />
-    <Compile Include="UI\ProgressBar.cs" />
+    <Compile Include="Language\Translations.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Translations.resx</DependentUpon>
+    </Compile>
+    <Compile Include="UI\TimerBar.cs" />
     <Compile Include="Data\GatheringSpot.cs" />
     <Compile Include="UI\TTPanel.cs" />
   </ItemGroup>
@@ -226,27 +234,29 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Readme.md" />
+    <Content Include="Todos.txt" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ref\Armor_%28attribute%29.png" />
     <Content Include="ref\bar_gradient.png" />
-    <Content Include="ref_not_used\back.png" />
+    <Content Include="ref\border_accent.png" />
+    <Content Include="ref\corner_accent.png" />
+    <Content Include="ref\resize_corner_active.png" />
+    <Content Include="ref\resize_corner_inactive.png" />
     <Content Include="ref\Closed.png" />
     <Content Include="ref\end_nub.png" />
     <Content Include="ref\marker_icon.png" />
-    <Content Include="ref_not_used\middle.png" />
     <Content Include="ref\middle_bottom.png" />
     <Content Include="ref\middle_top.png" />
     <Content Include="ref\right_side.png" />
     <Content Include="ref\side_left.png" />
-    <Content Include="ref_not_used\Apply_to_Build_Template.png" />
-    <Content Include="ref_not_used\Commander_tag_%28white%29.png" />
-    <Content Include="ref_not_used\Hero_panel_equipment_icon.png" />
-    <Content Include="ref_not_used\Precision_%28icon%29.png" />
-    <Content Include="ref_not_used\Squad_UI_ready_no.png" />
-    <Content Include="ref_not_used\Squad_UI_ready_yes.png" />
-    <Content Include="ref_not_used\Support_panel_main_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Language\Translations.de.resx" />
+    <EmbeddedResource Include="Language\Translations.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Translations.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

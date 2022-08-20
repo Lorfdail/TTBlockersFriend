@@ -1,4 +1,4 @@
-﻿namespace TTBlockersFriend.Data
+﻿namespace TTBlockersStuff.Data
 {
     /// <summary>
     /// Currently not used .. based on a list from Tany

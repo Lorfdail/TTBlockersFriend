@@ -1,6 +1,6 @@
 ﻿using Gw2Sharp.Models;
 
-namespace TTBlockersFriend.Data
+namespace TTBlockersStuff.Data
 {
     /// <summary>
     /// Data class for the different capabilities of the different professions and specializations .. WIP based on a list from Tany
