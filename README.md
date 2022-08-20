@@ -23,7 +23,7 @@ There is also the helper for positioning yourself which is marked by a little ic
 #### Very close
 ![Panel whilst being very close](./docs/images/panel_positionhelper_close.png)
 #### Correct
-![Panel when you are in the perfect spot](./docs/images/panel_positionhelper_corect.png)
+![Panel when you are in the perfect spot](./docs/images/panel_positionhelper_correct.png)
 #### Impossible (sitting on a mount)
 ![Panel when you are sitting on a mount](./docs/images/panel_positionhelper_impossible.png)
 
