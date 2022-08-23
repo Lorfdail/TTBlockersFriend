@@ -4,11 +4,11 @@ This is a little helper for the tasks that a blocker has during the triple troub
 
 ## Installation
 
-The installation of this module is simply done by opening Blish HUD -> opening the Settings -> in the Module Repo section search for "TT Blockers Stuff" and hit "Install".
+The installation of this module is simply done by opening Blish HUD -> opening the Settings -> in the Module Repo section search for "TTBlockersStuff" and hit "Install".
 
 ## Usage
 
-Once the module is installed it essentially starts working once you are in the bloodtide coast map and near one of the 4 spots that this module recognizes (all 3 wurm arenas and the gathering spot near Firthside Vigil Waypoint. If you are close then the Module should display a panel similar to this one in the middle of the screen:
+Once the module is installed it essentially starts working once you are in the bloodtide coast map and near one of the 4 spots that this module recognizes (all 3 wurm arenas and the gathering spot near Firthside Vigil Waypoint). If you are close then the Module should display a panel similar to this one in the middle of the screen:
 
 ![Default Panel look](./docs/images/panel_default.png)
 
