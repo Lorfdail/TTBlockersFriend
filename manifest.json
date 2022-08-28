@@ -4,7 +4,7 @@
   "namespace": "Lorf.BH.TTBlockersStuff",
   "package": "TTBlockersStuff.dll",
   "manifest_version": 1,
-  "description": "This module is a little helper for the tasks that a blocker has during the triple trouble event in bloodtide coast. The idea is based on the site https://tripletrouble.today/blocker/.",
+  "description": "This module is a little helper for the tasks that a blocker has during the triple trouble event in bloodtide coast. The idea is based on the site https://tripletrouble.today/blocker/. Feedback is welcome!",
   "dependencies": {
     "bh.blishhud": "0.11.6 - 0.11.7"
   },
