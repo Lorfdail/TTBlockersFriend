@@ -1,17 +1,16 @@
 {
   "name": "TTBlockersStuff",
-  "version": "0.1.0-alpha",
+  "version": "0.2.0-alpha",
   "namespace": "Lorf.BH.TTBlockersStuff",
   "package": "TTBlockersStuff.dll",
   "manifest_version": 1,
   "description": "This module is a little helper for the tasks that a blocker has during the triple trouble event in bloodtide coast. The idea is based on the site https://tripletrouble.today/blocker/.",
   "dependencies": {
-    "bh.blishhud": ">=0.11.6"
+    "bh.blishhud": "0.11.6 - 0.11.7"
   },
   "url": "https://github.com/Lorfdail/TTBlockersStuff",
-  "author": {
+  "contributors": [{
     "name": "Lorfdail",
-    "username": "Lorf.1897",
-    "url": "https://github.com/Lorfdail"
-  }
+    "username": "Lorf.1897"
+  }]
 }

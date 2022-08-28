@@ -27,17 +27,17 @@ namespace Lorf.BH.TTBlockersStuff.UI
         private const int HEADER_HEIGHT = 36;
 
         // some weird internal textures from blish hud .. getting that stuff by name or via a constant class would be too easy now wouldn't it be? 
-        private static readonly Texture2D _texturePanelHeader = Content.GetTexture("controls/panel/1032325");
-        private static readonly Texture2D _texturePanelHeaderActive = Content.GetTexture("controls/panel/1032324");
+        private Texture2D _texturePanelHeader = Module.Instance.ContentsManager.GetTexture("1032325.png");
+        private Texture2D _texturePanelHeaderActive = Module.Instance.ContentsManager.GetTexture("1032324.png");
 
         // small icons that get displayed next to the title once specific flags are set
-        private static readonly Texture2D armorIcon = Module.Instance.ContentsManager.GetTexture("Armor_(attribute).png");
-        private static readonly Texture2D markerIcon = Module.Instance.ContentsManager.GetTexture("marker_icon.png");
-        private static readonly Texture2D impossibleIcon = Module.Instance.ContentsManager.GetTexture("Closed.png");
-        private static readonly Texture2D resizeCornerInactive = Module.Instance.ContentsManager.GetTexture("resize_corner_inactive.png");
-        private static readonly Texture2D resizeCornerActive = Module.Instance.ContentsManager.GetTexture("resize_corner_active.png");
-        private static readonly Texture2D cornerAccent = Module.Instance.ContentsManager.GetTexture("corner_accent.png");
-        private static readonly Texture2D borderAccent = Module.Instance.ContentsManager.GetTexture("border_accent.png");
+        private Texture2D armorIcon = Module.Instance.ContentsManager.GetTexture("Armor_(attribute).png");
+        private Texture2D markerIcon = Module.Instance.ContentsManager.GetTexture("marker_icon.png");
+        private Texture2D impossibleIcon = Module.Instance.ContentsManager.GetTexture("Closed.png");
+        private Texture2D resizeCornerInactive = Module.Instance.ContentsManager.GetTexture("resize_corner_inactive.png");
+        private Texture2D resizeCornerActive = Module.Instance.ContentsManager.GetTexture("resize_corner_active.png");
+        private Texture2D cornerAccent = Module.Instance.ContentsManager.GetTexture("corner_accent.png");
+        private Texture2D borderAccent = Module.Instance.ContentsManager.GetTexture("border_accent.png");
 
         // shamelessly stolen from the WindowBase2 stuff
         private static readonly SettingCollection windowSettings = Module.Instance.SettingsManager.ModuleSettings.AddSubCollection("TTPanel");

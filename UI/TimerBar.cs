@@ -22,11 +22,11 @@ namespace Lorf.BH.TTBlockersStuff.UI
         public const int Eggs = 1;
 
         // Textures
-        private static readonly Texture2D textureBarTop = Module.Instance.ContentsManager.GetTexture("middle_top.png");
-        private static readonly Texture2D textureBarBottom = Module.Instance.ContentsManager.GetTexture("middle_bottom.png");
-        private static readonly Texture2D textureBarLeftSide = Module.Instance.ContentsManager.GetTexture("side_left.png");
-        private static readonly Texture2D textureBarRightSide = Module.Instance.ContentsManager.GetTexture("right_side.png");
-        private static readonly Texture2D textureBarGradient = Module.Instance.ContentsManager.GetTexture("bar_gradient.png");
+        private readonly Texture2D textureBarTop = Module.Instance.ContentsManager.GetTexture("middle_top.png");
+        private readonly Texture2D textureBarBottom = Module.Instance.ContentsManager.GetTexture("middle_bottom.png");
+        private readonly Texture2D textureBarLeftSide = Module.Instance.ContentsManager.GetTexture("side_left.png");
+        private readonly Texture2D textureBarRightSide = Module.Instance.ContentsManager.GetTexture("right_side.png");
+        private readonly Texture2D textureBarGradient = Module.Instance.ContentsManager.GetTexture("bar_gradient.png");
 
         // The boundaries of all the areas / textures
         private Rectangle layoutBarLeftSide;
@@ -116,12 +116,23 @@ namespace Lorf.BH.TTBlockersStuff.UI
         /// </summary>
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds)
         {
-            // this is far from being nice yes  .. and you know what? i will *leave* it like *this* until i get enough feedback for 0.2.0! fight me >:3
+            // this is far from being nice yes  .. and you know what? i will *leave* it like *this* until i get enough feedback for 0.3.0! fight me >:3
             Color color = new Color(237, 121, 38);
-            if (Module.Instance.SettingsManager.ModuleSettings.TryGetSetting("colorPickerSettingTimerBar" + barIndex, out var newColor) && Value >= MaxValue)
+            if (Value >= MaxValue)
             {
-                var tmp = (newColor as SettingEntry<Gw2Sharp.WebApi.V2.Models.Color>).Value;
-                color = tmp.Cloth?.ToXnaColor() ?? color;
+                if (Module.Instance.SettingsManager.ModuleSettings.TryGetSetting("colorPickerSettingTimerBar" + barIndex, out var newColor))
+                {
+                    var tmp = (newColor as SettingEntry<Gw2Sharp.WebApi.V2.Models.Color>).Value;
+                    color = tmp.Cloth?.ToXnaColor() ?? color;
+                }
+            }
+            else
+            {
+                if (Module.Instance.SettingsManager.ModuleSettings.TryGetSetting("colorPickerSettingTimerBarRefilling" + barIndex, out var newColor))
+                {
+                    var tmp = (newColor as SettingEntry<Gw2Sharp.WebApi.V2.Models.Color>).Value;
+                    color = tmp.Cloth?.ToXnaColor() ?? color;
+                }
             }
 
             // Slightly tint the background

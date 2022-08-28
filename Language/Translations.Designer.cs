@@ -124,6 +124,24 @@ namespace TTBlockersStuff.Language {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Eggs bar color whilst refilling. ähnelt.
+        /// </summary>
+        internal static string SettingColorSelectionEggsRefillingText {
+            get {
+                return ResourceManager.GetString("SettingColorSelectionEggsRefillingText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Color for the eggs bar whilst refilling. ähnelt.
+        /// </summary>
+        internal static string SettingColorSelectionEggsRefillingTooltipText {
+            get {
+                return ResourceManager.GetString("SettingColorSelectionEggsRefillingTooltipText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Eggs bar color. ähnelt.
         /// </summary>
         internal static string SettingColorSelectionEggsText {
@@ -138,6 +156,24 @@ namespace TTBlockersStuff.Language {
         internal static string SettingColorSelectionEggsTooltipText {
             get {
                 return ResourceManager.GetString("SettingColorSelectionEggsTooltipText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Husks bar color whilst refilling. ähnelt.
+        /// </summary>
+        internal static string SettingColorSelectionHusksRefillingText {
+            get {
+                return ResourceManager.GetString("SettingColorSelectionHusksRefillingText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Color for the husks bar whilst refilling. ähnelt.
+        /// </summary>
+        internal static string SettingColorSelectionHusksRefillingTooltipText {
+            get {
+                return ResourceManager.GetString("SettingColorSelectionHusksRefillingTooltipText", resourceCulture);
             }
         }
         

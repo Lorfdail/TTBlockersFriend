@@ -67,8 +67,8 @@ namespace Lorf.BH.TTBlockersStuff
                 Location = new Point(PROGRESS_BAR_MARGIN, PROGRESS_BAR_MARGIN),
                 Size = new Point(mainPanel.ContentRegion.Width - (PROGRESS_BAR_MARGIN * 2), (mainPanel.ContentRegion.Height / 2) - PROGRESS_BAR_MARGIN - (PROGRESS_BAR_MARGIN / 2)),
                 Parent = mainPanel,
-                MaxValue = 80,
-                Value = 80,
+                MaxValue = 1f,
+                Value = 1f,
                 BarText = $"{Translations.TimerBarTextHusks} ({Translations.TimerBarTextReady})",
             };
             mainPanel.Resized += (previousSize, currentSize) =>
@@ -94,8 +94,8 @@ namespace Lorf.BH.TTBlockersStuff
                 Location = new Point(PROGRESS_BAR_MARGIN, husksBar.Location.Y + husksBar.Size.Y + PROGRESS_BAR_MARGIN),
                 Size = new Point(mainPanel.ContentRegion.Width - (PROGRESS_BAR_MARGIN * 2), (mainPanel.ContentRegion.Height / 2) - PROGRESS_BAR_MARGIN - (PROGRESS_BAR_MARGIN / 2)),
                 Parent = mainPanel,
-                MaxValue = 40,
-                Value = 40,
+                MaxValue = 1f,
+                Value = 1f,
                 BarText = $"{Translations.TimerBarTextEggs} ({Translations.TimerBarTextReady})",
             };
             mainPanel.Resized += (previousSize, currentSize) =>
@@ -135,9 +135,15 @@ namespace Lorf.BH.TTBlockersStuff
             SettingsManager.ModuleSettings.DefineSetting("colorPickerSettingTimerBar0", Colors?.First(),
                 () => Translations.SettingColorSelectionHusksText,
                 () => Translations.SettingColorSelectionHusksTooltipText);
+            SettingsManager.ModuleSettings.DefineSetting("colorPickerSettingTimerBarRefilling0", Colors?.First(),
+                () => Translations.SettingColorSelectionHusksRefillingText,
+                () => Translations.SettingColorSelectionHusksRefillingTooltipText);
             SettingsManager.ModuleSettings.DefineSetting("colorPickerSettingTimerBar1", Colors?.First(),
                 () => Translations.SettingColorSelectionEggsText,
                 () => Translations.SettingColorSelectionEggsTooltipText);
+            SettingsManager.ModuleSettings.DefineSetting("colorPickerSettingTimerBarRefilling1", Colors?.First(),
+                () => Translations.SettingColorSelectionEggsRefillingText,
+                () => Translations.SettingColorSelectionEggsRefillingTooltipText);
 
             await base.LoadAsync();
         }
@@ -153,6 +159,7 @@ namespace Lorf.BH.TTBlockersStuff
             mainPanel?.Dispose();
             husksBar?.Dispose();
             eggsBar?.Dispose();
+
             Instance = null;
         }
 
@@ -180,9 +187,6 @@ namespace Lorf.BH.TTBlockersStuff
             // we are in the correct map and we are at one of the gathering spots but our panel is hidden .. let us fix that
             if (!mainPanel.TargetVisibility)
             {
-                eggsTimerManager.Reset();
-                husksTimerManager.Reset();
-
                 mainPanel.BlockerIconVisible = false;
                 mainPanel.BlockerIconTint = new Color(Color.White, 0f);
 
@@ -225,9 +229,11 @@ namespace Lorf.BH.TTBlockersStuff
                 }
                 else
                 {
+                    Vector3 rawCharacterPosition = GameService.Gw2Mumble.RawClient.AvatarPosition.ToXnaVector3();
+
                     // rotation calculation of the angle between the players camera and the spot where the target (gathering spot location) is .. rotates a little compass icon in the title 
-                    Vector2 playerChameraDirection = new Vector2(GameService.Gw2Mumble.PlayerCamera.Position.X, GameService.Gw2Mumble.PlayerCamera.Position.Y) - new Vector2(GameService.Gw2Mumble.PlayerCharacter.Position.X, GameService.Gw2Mumble.PlayerCharacter.Position.Y);
-                    Vector2 targetDirection = gatheringSpot.Position - new Vector2(GameService.Gw2Mumble.PlayerCharacter.Position.X, GameService.Gw2Mumble.PlayerCharacter.Position.Y);
+                    Vector2 playerChameraDirection = new Vector2(GameService.Gw2Mumble.PlayerCamera.Position.X, GameService.Gw2Mumble.PlayerCamera.Position.Y) - new Vector2(rawCharacterPosition.X, rawCharacterPosition.Y);
+                    Vector2 targetDirection = gatheringSpot.Position - new Vector2(rawCharacterPosition.X, rawCharacterPosition.Y);
 
                     double sin = playerChameraDirection.X * targetDirection.Y - targetDirection.X * playerChameraDirection.Y;
                     double cos = playerChameraDirection.X * targetDirection.X + playerChameraDirection.Y * targetDirection.Y;

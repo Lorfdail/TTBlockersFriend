@@ -145,6 +145,14 @@
     <value>Gathering</value>
     <comment>Gathering spot at Firthside Vigil Waypoint.</comment>
   </data>
+  <data name="SettingColorSelectionEggsRefillingText" xml:space="preserve">
+    <value>Eggs bar color whilst refilling.</value>
+    <comment>Just the color whilst its refilling .. some people apparently wanna change that.</comment>
+  </data>
+  <data name="SettingColorSelectionEggsRefillingTooltipText" xml:space="preserve">
+    <value>Color for the eggs bar whilst refilling.</value>
+    <comment>Just the color whilst its refilling .. some people apparently wanna change that.</comment>
+  </data>
   <data name="SettingColorSelectionEggsText" xml:space="preserve">
     <value>Eggs bar color.</value>
     <comment>Text for the eggs color selection.</comment>
@@ -152,6 +160,14 @@
   <data name="SettingColorSelectionEggsTooltipText" xml:space="preserve">
     <value>Color for the eggs bar.</value>
     <comment>Tooltip text for the eggs color selection.</comment>
+  </data>
+  <data name="SettingColorSelectionHusksRefillingText" xml:space="preserve">
+    <value>Husks bar color whilst refilling.</value>
+    <comment>Just the color whilst its refilling .. some people apparently wanna change that.</comment>
+  </data>
+  <data name="SettingColorSelectionHusksRefillingTooltipText" xml:space="preserve">
+    <value>Color for the husks bar whilst refilling.</value>
+    <comment>Just the color whilst its refilling .. some people apparently wanna change that.</comment>
   </data>
   <data name="SettingColorSelectionHusksText" xml:space="preserve">
     <value>Husks bar color.</value>

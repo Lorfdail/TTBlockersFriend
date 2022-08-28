@@ -145,6 +145,14 @@
     <value>Sammeln</value>
     <comment>Sammelpunkt beim Wegpunkt Wachsame der Fördenmündung.</comment>
   </data>
+  <data name="SettingColorSelectionEggsRefillingText" xml:space="preserve">
+    <value>Farbe für die Eier während die Zeit läuft.</value>
+    <comment>Manche leute wollen die ändern können. </comment>
+  </data>
+  <data name="SettingColorSelectionEggsRefillingTooltipText" xml:space="preserve">
+    <value>Farbe, welche für die Anzeige der Eier verwendet wird während die Zeit läuft.</value>
+    <comment>Manche leute wollen die ändern können.</comment>
+  </data>
   <data name="SettingColorSelectionEggsText" xml:space="preserve">
     <value>Farbe für die Eier.</value>
     <comment>Text für die Einstellung der Eier / Eggs farbe.</comment>
@@ -152,6 +160,14 @@
   <data name="SettingColorSelectionEggsTooltipText" xml:space="preserve">
     <value>Farbe, welche für die Anzeige der Eier verwendet wird.</value>
     <comment>Tooltip text für die Einstellung der Eier / Eggs farbe.</comment>
+  </data>
+  <data name="SettingColorSelectionHusksRefillingText" xml:space="preserve">
+    <value>Farbe für die Hüllen während die Zeit läuft.</value>
+    <comment>Manche leute wollen die ändern können.</comment>
+  </data>
+  <data name="SettingColorSelectionHusksRefillingTooltipText" xml:space="preserve">
+    <value>Farbe, welche für die Anzeige der Hüllen verwendet wird während die Zeit läuft.</value>
+    <comment>Manche leute wollen die ändern können.</comment>
   </data>
   <data name="SettingColorSelectionHusksText" xml:space="preserve">
     <value>Farbe für die Hüllen.</value>
