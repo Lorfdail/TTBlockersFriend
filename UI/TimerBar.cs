@@ -79,6 +79,13 @@ namespace Lorf.BH.TTBlockersStuff.UI
             set => SetProperty(ref barText, value, false);
         }
 
+        protected Color textColor = Color.White;
+        public Color TextColor
+        {
+            get => textColor;
+            set => SetProperty(ref textColor, value, false);
+        }
+
         protected int barIndex;
 
         public TimerBar(int barIndex)
@@ -142,7 +149,7 @@ namespace Lorf.BH.TTBlockersStuff.UI
             spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, layoutBarBackground, color);
             if (Value < MaxValue)
                 spriteBatch.DrawOnCtrl(this, textureBarGradient, layoutBarGradient);
-            spriteBatch.DrawStringOnCtrl(this, barText, GameService.Content.DefaultFont16, bounds, Color.White, horizontalAlignment: HorizontalAlignment.Center);
+            spriteBatch.DrawStringOnCtrl(this, barText, GameService.Content.DefaultFont16, bounds, textColor, horizontalAlignment: HorizontalAlignment.Center);
 
             // borders
             spriteBatch.DrawOnCtrl(this, textureBarTop, layoutBarTop);

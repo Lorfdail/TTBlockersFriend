@@ -1,6 +1,7 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
 using Lorf.BH.TTBlockersStuff.UI;
+using Microsoft.Xna.Framework;
 using System;
 using TTBlockersStuff.Language;
 
@@ -11,7 +12,12 @@ namespace Lorf.BH.TTBlockersStuff
     /// </summary>
     class TimerManager
     {
+
         private static readonly Logger Logger = Logger.GetLogger<TimerManager>();
+
+        private TimeSpan textBlinkDuration = new TimeSpan(200 * TimeSpan.TicksPerMillisecond);
+        private TimeSpan lastBlinkRequestTime = TimeSpan.Zero;
+        private int lastBlinkRequestSecond = 0;
 
         public string Name { get; set; }
         public bool Active { get; private set; }
@@ -44,7 +50,7 @@ namespace Lorf.BH.TTBlockersStuff
             }
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             if (!Active)
                 return;
@@ -56,6 +62,20 @@ namespace Lorf.BH.TTBlockersStuff
             {
                 TimerBar.BarText = $"{Name} ({(int)secondsRemaining}s)";
                 TimerBar.Value = TimerBar.MaxValue - ((float)((targetTime - now).TotalMilliseconds / 1000));
+                if (TimerBar.MaxValue != (int)secondsRemaining && (((int)secondsRemaining) % 10 == 0 || secondsRemaining < 10) && lastBlinkRequestTime == TimeSpan.Zero && lastBlinkRequestSecond != (int)secondsRemaining)
+                {
+                    lastBlinkRequestTime = gameTime.TotalGameTime;
+                    lastBlinkRequestSecond = (int)secondsRemaining;
+                }
+                    
+
+                if(lastBlinkRequestTime.Add(textBlinkDuration) > gameTime.TotalGameTime)
+                    TimerBar.TextColor = Color.Red;
+                else
+                {
+                    TimerBar.TextColor = Color.White;
+                    lastBlinkRequestTime = TimeSpan.Zero;
+                }
             }
             else
             {
@@ -63,6 +83,7 @@ namespace Lorf.BH.TTBlockersStuff
                 ScreenNotification.ShowNotification(Name + " " + Translations.TimerBarTextReady + "!", ScreenNotification.NotificationType.Info);
                 TimerBar.BarText = $"{Name} ({Translations.TimerBarTextReady})";
                 TimerBar.Value = TimerBar.MaxValue;
+                TimerBar.TextColor = Color.White;
             }
         }
     }

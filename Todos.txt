@@ -26,7 +26,8 @@
 - [-] Worry about a coherent coding style to please all the OCD people out there (no mixmatch of variable naming conventions, use either var or proper variable types, etc.)
 - [ ] Option to either show the panel outside of the arena whilst its still active oooooor show time the current notification overshoot whilst being outside the arena
 - [ ] reset the timers on arena swap (blockers sometimes do swaps if stuff goes downhill)
-
+- [ ] use window resolution for panel positioning instead of screen resolution
+- [ ] Husk Spots marker
 
 Some more stuff / first impressions
 - [1] Bar filling up

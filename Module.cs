@@ -250,8 +250,8 @@ namespace Lorf.BH.TTBlockersStuff
             }
 
             // just simply update the timers once we are at a gathering spot
-            husksTimerManager.Update();
-            eggsTimerManager.Update();
+            husksTimerManager.Update(gameTime);
+            eggsTimerManager.Update(gameTime);
         }
     }
 }
