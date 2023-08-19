@@ -1,6 +1,6 @@
 {
   "name": "TTBlockersStuff",
-  "version": "0.3.0-alpha",
+  "version": "0.3.1-alpha",
   "namespace": "Lorf.BH.TTBlockersStuff",
   "package": "TTBlockersStuff.dll",
   "manifest_version": 1,

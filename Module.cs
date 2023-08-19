@@ -120,8 +120,8 @@ namespace Lorf.BH.TTBlockersStuff
         protected override async Task LoadAsync()
         {
             // i will get my default color even if its the last thing i do
-            Colors = new List<Gw2Sharp.WebApi.V2.Models.Color>() 
-            { 
+            Colors = new List<Gw2Sharp.WebApi.V2.Models.Color>()
+            {
                 new Gw2Sharp.WebApi.V2.Models.Color()
                 {
                     Name = "Default",
@@ -129,8 +129,9 @@ namespace Lorf.BH.TTBlockersStuff
                     {
                         Rgb = new List<int>() { 237, 121, 38 },
                     }
-                } 
-            }.Concat(await Instance.Gw2ApiManager.Gw2ApiClient.V2.Colors.AllAsync());
+                }
+            }; // .Concat(await Instance.Gw2ApiManager.Gw2ApiClient.V2.Colors.AllAsync());
+            // above concat is now gone for a while thanks to the api shutting down .. dw there will be another "small" patch soon :)
 
             SettingsManager.ModuleSettings.DefineSetting("colorPickerSettingTimerBar0", Colors?.First(),
                 () => Translations.SettingColorSelectionHusksText,
