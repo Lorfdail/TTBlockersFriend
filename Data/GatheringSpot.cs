@@ -11,9 +11,10 @@ namespace Lorf.BH.TTBlockersStuff
     /// </summary>
     class GatheringSpot
     {
-        public readonly static GatheringSpot Amber = new GatheringSpot(Translations.GatheringSpotTitleAmber, 90, new Vector2(670.07f, -606.34f), true, 100);
-        public readonly static GatheringSpot Crimson = new GatheringSpot(Translations.GatheringSpotTitleCrimson, 90, new Vector2(198.5f, -438.5f), true, 100);
-        public readonly static GatheringSpot Cobalt = new GatheringSpot(Translations.GatheringSpotTitleCobalt, 80, new Vector2(-277.5f, -878.2f), true, 150);
+        // at this point its not easy to get more precise than this
+        public readonly static GatheringSpot Amber = new GatheringSpot(Translations.GatheringSpotTitleAmber, 90, new Vector2(670.4353339f, -606.3869562f), true, 100);
+        public readonly static GatheringSpot Crimson = new GatheringSpot(Translations.GatheringSpotTitleCrimson, 90, new Vector2(198.4920996f, -438.1532447f), true, 100);
+        public readonly static GatheringSpot Cobalt = new GatheringSpot(Translations.GatheringSpotTitleCobalt, 80, new Vector2(-277.4964237f, -878.2016061f), true, 150);
         public readonly static GatheringSpot General = new GatheringSpot(Translations.GatheringspotTitleMain, 90, new Vector2(185f, -83f), false, 100);
         public readonly static IEnumerable<GatheringSpot> All = new List<GatheringSpot> { Amber, Crimson, Cobalt, General };
 

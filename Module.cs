@@ -212,7 +212,7 @@ namespace Lorf.BH.TTBlockersStuff
             if (isInMajorBlockRange)
             {
                 bool isInMiddleBlockRange = Vector2.Distance(gatheringSpot.Position, vec2Pos) < 1f;
-                bool isInBlockRange = Vector2.Distance(gatheringSpot.Position, vec2Pos) < .35f;
+                bool isInBlockRange = Vector2.Distance(gatheringSpot.Position, vec2Pos) < .15f;
                 bool isMounted = GameService.Gw2Mumble.PlayerCharacter.CurrentMount != Gw2Sharp.Models.MountType.None;
 
                 if (mainPanel.IsMounted != isMounted)
@@ -244,7 +244,7 @@ namespace Lorf.BH.TTBlockersStuff
                     mainPanel.BlockerIconRotation = angle;
 
                     if (isInMiddleBlockRange)
-                        mainPanel.BlockerIconTint = new Color((Vector2.Distance(gatheringSpot.Position, vec2Pos) - .35f) / .65f + .486f, (Vector2.Distance(gatheringSpot.Position, vec2Pos) - .35f) / .65f + .988f, 0f, 1f);
+                        mainPanel.BlockerIconTint = new Color((Vector2.Distance(gatheringSpot.Position, vec2Pos) - .15f) / .65f + .486f, (Vector2.Distance(gatheringSpot.Position, vec2Pos) - .15f) / .65f + .988f, 0f, 1f);
                     else if (isInMajorBlockRange)
                         mainPanel.BlockerIconTint = new Color(1f, 1f - ((Vector2.Distance(gatheringSpot.Position, vec2Pos) - 1f) / 9f), 0f, 1f);
                 }
